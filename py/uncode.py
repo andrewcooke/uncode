@@ -16,6 +16,7 @@ DEFAULT_GAMMA = 2
 DEFAULT_WEIGHT = 2
 DEFAULT_EVERY = 100
 DEFAULT_VERBOSITY = 4
+DEFAULT_NEIGHBOURS = 10
 
 
 def main():
@@ -28,7 +29,7 @@ def main():
     if args.dump:
         print(ngrams)
     else:
-        anneal(args.code, ngrams, args.words, args.steps, args.heat, args.gamma, args.weight, args.every)
+        anneal(args.code, ngrams, args.words, args.neighbours, args.steps, args.heat, args.gamma, args.weight, args.every)
 
 
 def make_parser():
@@ -49,6 +50,8 @@ the ciphertext, and the include pattern, which should select the characters used
                         help='use raw format (verbatim whitespace)?')
     parser.add_argument('--words', action='store_true',
                         help='score whole words (separately from ngrams)?')
+    parser.add_argument('--neighbours', metavar='N', type=int, default=DEFAULT_NEIGHBOURS,
+                        help=f'swap within this range in alphabet (default {DEFAULT_NEIGHBOURS})')
     parser.add_argument('--include', metavar='REGEX', default=DEFAULT_INCLUDE,
                         help=f'sample characters to include (default {DEFAULT_INCLUDE})')
     parser.add_argument('--dump', action='store_true',
