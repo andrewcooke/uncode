@@ -5,7 +5,7 @@ from guess import Guess
 log = getLogger(__name__)
 
 
-def anneal(code, ngrams, words, neighbours, steps, heat, gamma, weight, every):
+def anneal(code, fmt, ngrams, words, neighbours, steps, heat, gamma, weight, every):
 
     def estimate_max_temp(guess):
         max_temp, base = 0, guess.score(ngrams, words, weight)
@@ -15,7 +15,7 @@ def anneal(code, ngrams, words, neighbours, steps, heat, gamma, weight, every):
 
     def dump(old_score, old_guess, temp, i):
         log.info(f'\nscore: {old_score:4.2f}  temp: {temp:5.3f}  countdown: {i}/{steps}')
-        log.info(f'{code}')
+        log.info(f'{fmt(code)}')
         log.info(f'{old_guess}')
 
     old_guess = Guess(code, ngrams, neighbours)

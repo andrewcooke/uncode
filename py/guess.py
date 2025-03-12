@@ -24,9 +24,11 @@ class Guess:
         counter = defaultdict(lambda: 0)
         for c in self.__code:
             counter[c] += 1
-        enc = ''.join(kv[0] for kv in sorted(counter.items(), key=lambda kv: kv[1], reverse=True))
+        enc = [kv[0] for kv in sorted(counter.items(), key=lambda kv: kv[1], reverse=True)]
         plain = ''.join(kv[0] for kv in sorted(self.__ngrams[1].items(), key=lambda kv: kv[1], reverse=True))
         for c in enc:
+            if not plain:
+                raise Exception(f'insufficient alphabet for input')
             p, plain = plain[0], plain[1:]
             log.debug(f'{p} -> {c}')
             self.__encode[p] = c

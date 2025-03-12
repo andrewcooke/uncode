@@ -5,6 +5,7 @@ from sys import stderr
 
 from anneal import anneal
 from ngrams import build_ngrams
+from parsers import STRING, HEX, PARSER, FMT
 
 log = getLogger(__name__)
 
@@ -17,6 +18,7 @@ DEFAULT_WEIGHT = 2
 DEFAULT_EVERY = 100
 DEFAULT_VERBOSITY = 4
 DEFAULT_NEIGHBOURS = 10
+DEFAULT_FORMAT = STRING
 
 
 def main():
@@ -29,7 +31,8 @@ def main():
     if args.dump:
         print(ngrams)
     else:
-        anneal(args.code, ngrams, args.words, args.neighbours, args.steps, args.heat, args.gamma, args.weight, args.every)
+        anneal(PARSER[args.format](args.code), FMT[args.format],
+               ngrams, args.words, args.neighbours, args.steps, args.heat, args.gamma, args.weight, args.every)
 
 
 def make_parser():
@@ -66,6 +69,8 @@ the ciphertext, and the include pattern, which should select the characters used
                         help=f'cooling curve (default {DEFAULT_GAMMA})')
     parser.add_argument('--weight', metavar='N', type=float, default=DEFAULT_WEIGHT,
                         help=f'weight for higher degree (default {DEFAULT_WEIGHT})')
+    parser.add_argument('--format', metavar='FMT', choices=(STRING, HEX), default=STRING,
+                        help=f'input format (default {STRING}, {HEX})')
     parser.add_argument('-v', metavar='N', type=int, default=DEFAULT_VERBOSITY,
                         help=f'verbosity (1-5, default {DEFAULT_VERBOSITY})')
     parser.add_argument('code', help='text to uncode')
