@@ -1,6 +1,7 @@
 from collections import defaultdict
 from logging import getLogger
 from random import randrange
+from re import split
 
 from ngrams import WORDS
 from utils import overlapping_chunks
@@ -39,8 +40,9 @@ class Guess:
             for ngram in overlapping_chunks(plain, degree):
                 score += k * ngrams[degree][ngram]
         if words:
-            for word in plain.split():
-                score += ngrams[WORDS][word.lower()]
+            for word in split(r'\W+', plain):
+                if word:
+                    score += ngrams[WORDS][word.lower()]
         return score / len(self.__code)
 
     def __str__(self):

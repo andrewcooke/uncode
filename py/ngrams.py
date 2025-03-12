@@ -1,6 +1,6 @@
 from collections import defaultdict
 from logging import getLogger
-from re import sub, fullmatch
+from re import sub, fullmatch, split
 from math import log as ln
 
 from utils import keys_sorted_by_values
@@ -28,10 +28,9 @@ def count_ngrams(path, degree, lower, raw, include):
                 line = sub(r'^ ', '', line)
             line = ''.join(c for c in line if include.fullmatch(c))
             if ' ' in line:
-                for word in line.split():
-                    word = word.lower()
-                    if fullmatch(r'\w+', word):
-                        counts[WORDS][word] += 1
+                for word in split(r'\W+', line):
+                    if word:
+                        counts[WORDS][word.lower()] += 1
             acc += line
             nchar += len(line)
             while len(acc) >= degree:
