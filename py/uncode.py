@@ -1,7 +1,8 @@
+import fileinput
 from argparse import ArgumentParser
 from logging import getLogger, StreamHandler
 from re import compile
-from sys import stderr
+from sys import stderr, stdin
 
 from anneal import anneal
 from ngrams import build_ngrams
@@ -31,7 +32,8 @@ def main():
     if args.dump:
         print(ngrams)
     else:
-        anneal(PARSER[args.format](args.code), FMT[args.format],
+        code = possibly_stdin(args.code)
+        anneal(PARSER[args.format](code), FMT[args.format],
                ngrams, args.words, args.neighbours, args.steps, args.heat, args.gamma, args.weight, args.every)
 
 
@@ -73,8 +75,15 @@ the ciphertext, and the include pattern, which should select the characters used
                         help=f'input format (default {STRING}, {HEX})')
     parser.add_argument('-v', metavar='N', type=int, default=DEFAULT_VERBOSITY,
                         help=f'verbosity (1-5, default {DEFAULT_VERBOSITY})')
-    parser.add_argument('code', help='text to uncode')
+    parser.add_argument('code', help='text to uncode (- will read from stdin)')
     return parser
+
+
+def possibly_stdin(code):
+    if code == '-':
+        return ''.join(stdin)
+    else:
+        return code
 
 
 if __name__ == '__main__':
