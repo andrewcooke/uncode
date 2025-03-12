@@ -28,7 +28,7 @@ def main():
     if args.dump:
         print(ngrams)
     else:
-        anneal(args.code, ngrams, args.steps, args.heat, args.gamma, args.weight, args.every)
+        anneal(args.code, ngrams, args.words, args.steps, args.heat, args.gamma, args.weight, args.every)
 
 
 def make_parser():
@@ -47,6 +47,8 @@ the ciphertext, and the include pattern, which should select the characters used
                         help='force sample to lower case?')
     parser.add_argument('--raw', action='store_true',
                         help='use raw format (verbatim whitespace)?')
+    parser.add_argument('--words', action='store_true',
+                        help='score whole words (separately from ngrams)?')
     parser.add_argument('--include', metavar='REGEX', default=DEFAULT_INCLUDE,
                         help=f'sample characters to include (default {DEFAULT_INCLUDE})')
     parser.add_argument('--dump', action='store_true',

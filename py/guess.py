@@ -1,6 +1,7 @@
 from collections import defaultdict
 from logging import getLogger
 
+from ngrams import WORDS
 from utils import overlapping_chunks
 
 log = getLogger(__name__)
@@ -29,13 +30,16 @@ class Guess:
             self.__encode[p] = c
             self.__decode[c] = p
 
-    def score(self, ngrams, weight):
+    def score(self, ngrams, words, weight):
         score = 0
         plain = ''.join(self.__decode[c] for c in self.__code)
         for degree in range(1, ngrams.degree+1):
             k = pow(weight, degree)
             for ngram in overlapping_chunks(plain, degree):
                 score += k * ngrams[degree][ngram]
+        if words:
+            for word in plain.split():
+                score += ngrams[WORDS][word.lower()]
         return score / len(self.__code)
 
     def __str__(self):

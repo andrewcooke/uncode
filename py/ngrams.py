@@ -1,11 +1,13 @@
 from collections import defaultdict
 from logging import getLogger
-from re import sub
+from re import sub, fullmatch
 from math import log as ln
 
 from utils import keys_sorted_by_values
 
 log = getLogger(__name__)
+
+WORDS = 'words'
 
 
 def build_ngrams(path, degree, lower, raw, include):
@@ -25,13 +27,18 @@ def count_ngrams(path, degree, lower, raw, include):
                 line = sub(r'\s+', ' ', line)
                 line = sub(r'^ ', '', line)
             line = ''.join(c for c in line if include.fullmatch(c))
+            if ' ' in line:
+                for word in line.split():
+                    word = word.lower()
+                    if fullmatch(r'\w+', word):
+                        counts[WORDS][word] += 1
             acc += line
             nchar += len(line)
             while len(acc) >= degree:
                 for n in range(1, degree+1):
                     counts[n][acc[:n]] += 1
                 acc = acc[1:]
-        log.debug(f'read {nline} lines ({nchar} chars) from {path}')
+        log.debug(f'read {nline} lines ({nchar} chars from {path}')
         return counts
 
 
@@ -58,6 +65,7 @@ class NGrams:
     def __str__(self):
         return f'''alphabet: {self.alphabet}
 {'\n'.join(self.__str_degree(n) for n in range(1, self.degree+1))}
+{self.__str_degree(WORDS) if WORDS in self.__log_probs else ''}
 '''
 
     def __str_degree(self, n):
