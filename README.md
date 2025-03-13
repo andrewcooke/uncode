@@ -1,5 +1,7 @@
 # uncode
 
+automated decryption of simple substitution ciphers (aka as caesar ciphers).
+
 ## example (taken from reddit/r/codes)
 
 ```
