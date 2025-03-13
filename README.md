@@ -1,6 +1,6 @@
 # uncode
 
-automated decryption of simple substitution ciphers (aka as caesar ciphers) using n-grams.
+automated decryption of simple substitution ciphers (aka caesar ciphers) using n-grams.
 
 ## example (taken from reddit/r/codes)
 
