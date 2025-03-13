@@ -11,11 +11,11 @@ from re import sub
 
 
 def string(code):
-    return list(code)
+    return code
 
 
 def string_fmt(code):
-    return ''.join(code)
+    return code
 
 
 def hex(code):
