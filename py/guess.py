@@ -12,7 +12,7 @@ log = getLogger(__name__)
 class Guess:
 
     def __init__(self, code, ngrams, neighbours, encode=None, decode=None):
-        self.__code = code
+        self.__code = code   # see comments on type in parsers.py
         self.__ngrams = ngrams
         self.__neighbours = min(len(ngrams.alphabet) - 1, max(1, neighbours))
         self.__encode = encode if encode else {}
