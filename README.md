@@ -39,8 +39,8 @@ it's not perfect, but it gets close.
 ### annealing guesses
 
 * an initial guess is made at decoding the ciphertext by replacing the most common symbol with the most
-  common letter in the reference text, the second most common symbol with the second most common letter, 
-  etc.
+  common letter (ie most common 1-gram) in the reference text, the second most common symbol with the 
+  second most common letter, etc.
 
 * the "score" of the guess is calculated by adding together the log weights of the different n-grams
   (this is a value roughly proportional to the probability that the plaintext comes from the same 
