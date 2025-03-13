@@ -34,6 +34,10 @@ it's not perfect, but it gets close.
 * the counts are converted to log weights (this makes the score, described below, scale roughly as a
   probability).
 
+* you can see the n-grams by specifying `--dump`.
+
+### annealing guesses
+
 * an initial guess is made at decoding the ciphertext by replacing the most common symbol with the most
   common letter in the reference text, the second most common symbol with the second most common letter, 
   etc.
@@ -44,10 +48,6 @@ it's not perfect, but it gets close.
 
 * the score may also include whole words (if `--words` is given) and may weight different degrees
   of n-grams differently (`--weight`).
-
-* you can see the n-grams by specifying `--dump`.
-
-### annealing guesses
 
 * two characters (ie two 1-grams) are chosen at random and swapped, to give a new guess, and the score
   for the new guess calculated.
