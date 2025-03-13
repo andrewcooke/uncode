@@ -67,6 +67,12 @@ it's not perfect, but it gets close.
 * the guess will converge to a final value, when the upper limit reaches zero, which is our translation 
   to plaintext.
 
-* the above process (repeated guessing, trying to increase the score) is called "simulated annealing";
-  the upper limit on the acceptable change in score is the "temperature"; the entire process is 
-  designed to optimize (maximize) the probability that the plaintext is consistent with the input 
+### summary
+
+the above process (repeated guessing, trying to increase the score) is called "simulated annealing";
+the upper limit on the acceptable change in score is the "temperature"; the entire process is 
+designed to optimize (maximize) the probability that the plaintext is consistent with the input.
+
+in other words, we try to find the most probable substitutions, where "most probable" means that
+the plaintext resembles the reference text in the relative frequency of letters, pairs of letters,
+etc.
