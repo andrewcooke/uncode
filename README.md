@@ -18,6 +18,11 @@ I quit wanna dIe, I hate seelInG iadP why couldn't I quit be a woman. God, I don
 
 it's not perfect, but it gets close.
 
+## getting started
+
+clone the repo and use python3 to run `uncode.py`.  give the `-h` argument to see available
+options.
+
 ## how it works
 
 ### preparing n-grams
