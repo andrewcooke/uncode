@@ -20,6 +20,8 @@ it's not perfect, but it gets close.
 
 ## how it works
 
+### preparing n-grams
+
 * the number of occurrences of the different n-grams are read from the reference text. a 1-gram is just a 
   single letter, so that counts different letters. a 2-gram is a pair of letters, so that counts the 
   numbers of different pairs, and so on up to `--degree`.
@@ -44,6 +46,8 @@ it's not perfect, but it gets close.
   of n-grams differently (`--weight`).
 
 * you can see the n-grams by specifying `--dump`.
+
+### annealing guesses
 
 * two characters (ie two 1-grams) are chosen at random and swapped, to give a new guess, and the score
   for the new guess calculated.
