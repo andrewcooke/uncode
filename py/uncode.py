@@ -6,7 +6,7 @@ from sys import stderr, stdin
 
 from anneal import anneal
 from ngrams import build_ngrams
-from parsers import STRING, HEX, PARSER, FMT
+from parsers import STRING, HEX, PARSER, FMT, BASE64
 
 log = getLogger(__name__)
 
@@ -33,7 +33,9 @@ def main():
         print(ngrams)
     else:
         code = possibly_stdin(args.code)
-        anneal(PARSER[args.format](code), FMT[args.format],
+        code = PARSER[args.format](code)
+        log.debug(f'code parsed to "{code}"')
+        anneal(code, FMT[args.format],
                ngrams, args.words, args.neighbours, args.steps, args.heat, args.gamma, args.weight, args.every)
 
 
@@ -71,8 +73,8 @@ the ciphertext, and the include pattern, which should select the characters used
                         help=f'cooling curve (default {DEFAULT_GAMMA})')
     parser.add_argument('--weight', metavar='N', type=float, default=DEFAULT_WEIGHT,
                         help=f'weight for higher degree (default {DEFAULT_WEIGHT})')
-    parser.add_argument('--format', metavar='FMT', choices=(STRING, HEX), default=STRING,
-                        help=f'input format (default {STRING}, {HEX})')
+    parser.add_argument('--format', metavar='FMT', choices=(STRING, HEX, BASE64), default=STRING,
+                        help=f'input format (default {STRING}, {HEX}, {BASE64})')
     parser.add_argument('-v', metavar='N', type=int, default=DEFAULT_VERBOSITY,
                         help=f'verbosity (1-5, default {DEFAULT_VERBOSITY})')
     parser.add_argument('code', help='text to uncode (- will read from stdin)')
