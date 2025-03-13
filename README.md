@@ -43,8 +43,8 @@ it's not perfect, but it gets close.
   the second most common letter, etc.
 
 * the "score" of the guess is calculated by adding together the log weights of the different n-grams
-  (this is a value roughly proportional to the probability that the plaintext comes from the same 
-  source as the reference text).
+  it contains (this is a value roughly proportional to the probability that the plaintext comes from 
+  the same source as the reference text).
 
 * the score may also include whole words (if `--words` is given) and may weight different degrees
   of n-grams differently (`--weight`).
