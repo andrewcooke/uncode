@@ -53,7 +53,7 @@ it's not perfect, but it gets close.
   that improve (increase) the score and *sometimes* keeping guesses that decrease the score (ie if the 
   increase is less than the upper limit).
 
-* as time goes on we lower the upper limit, become more strict about only accepting improvements 
+* as time goes on we lower the upper limit, becoming more strict about only accepting improvements 
   (the exact manner in which we lower the limit is controlled by `--gamma`; a value of 2, say, will
   lower it more quickly at the start, while a value like 0.5 will keep it higher at first and lower
   it more quickly near the end of the process).
