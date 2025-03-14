@@ -59,8 +59,8 @@ options.
 * two characters (ie two 1-grams) are chosen at random and swapped, to give a new guess, and the score
   for the new guess calculated.
 
-* by repeating this process several times we get an idea of how much the score changes on average.
-  this value is then modified by `--heat` and used as an upper limit.
+* by repeating this process several times we get an idea of the most that the score can change by.  
+  this value is then modified by `--heat` and used as an upper limit for what changes we will accept.
 
 * we then try swapping characters many times, looking at the changing scores, always keeping guesses
   that improve (increase) the score and *sometimes* keeping guesses that decrease the score (ie if the 
