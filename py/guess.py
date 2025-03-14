@@ -1,24 +1,24 @@
 from collections import defaultdict
+from copy import copy
 from logging import getLogger
 from random import randrange
 from re import split
 
 from ngrams import WORDS
-from utils import overlapping_chunks, keys_sorted_by_values
+from utils import overlapping_chunks, keys_sorted_by_values, words_in_line, degrees
 
 log = getLogger(__name__)
 
 
 class Guess:
 
-    def __init__(self, code, ngrams, neighbours, encode=None, decode=None):
+    def __init__(self, code, ngrams, neighbours):
         self.__code = code   # see comments on type in parsers.py
         self.__ngrams = ngrams
         self.__neighbours = min(len(ngrams.alphabet) - 1, max(1, neighbours))
-        self.__encode = encode if encode else {}
-        self.__decode = decode if decode else {}
-        if not decode and not encode:
-            self.__best_guess()
+        self.__encode = {}
+        self.__decode = {}
+        self.__best_guess()
 
     def __best_guess(self):
         counter = defaultdict(lambda: 0)
@@ -39,35 +39,40 @@ class Guess:
     def score(self, ngrams, words, weight):
         score = 0
         plain = ''.join(self.__decode[c] for c in self.__code)
-        for degree in range(1, ngrams.degree+1):
+        for degree in degrees(ngrams.degree):
             k = pow(weight, degree)
             for ngram in overlapping_chunks(plain, degree):
                 score += k * ngrams[degree][ngram]
         if words:
-            for word in split(r'\W+', plain):
-                if word:
-                    score += ngrams[WORDS][word.lower()]
+            for word in words_in_line(plain):
+                score += ngrams[WORDS][word.lower()]
         return score / len(self.__code)
 
     def __str__(self):
         return ''.join(self.__decode[c] for c in self.__code)
 
+    def __copy(self):
+        new_guess = copy(self)  # shallow copy
+        # deep copy the two things we will mutate
+        new_guess.__encode = self.__encode.copy()
+        new_guess.__decode = self.__decode.copy()
+        return new_guess
+
     def swap(self):
+        new_guess = self.__copy()
         p1, p2 = self.nearby_neighbours()
         c1 = self.__encode.get(p1)
         c2 = self.__encode.get(p2)
-        copy = Guess(self.__code, self.__ngrams, self.__neighbours,
-                     encode=self.__encode.copy(), decode=self.__decode.copy())
         # if p1 is used in decryption, replace it with p2
         # if it's not used then we can ignore p2
         if c1:
-            copy.__encode[p2] = c1
-            copy.__decode[c1] = p2
+            new_guess.__encode[p2] = c1
+            new_guess.__decode[c1] = p2
         # same with p2
         if c2:
-            copy.__encode[p1] = c2
-            copy.__decode[c2] = p1
-        return copy
+            new_guess.__encode[p1] = c2
+            new_guess.__decode[c2] = p1
+        return new_guess
 
     def random_neighbours(self):
         p1 = self.__ngrams.alphabet[randrange(0, len(self.__ngrams.alphabet))]
@@ -75,7 +80,7 @@ class Guess:
         return p1, p2
 
     def nearby_neighbours(self):
-        # largely equivalent to random for large neighbours
+        # largely equivalent to random_neighbours for large self.__neighbours
         i1 = randrange(0, len(self.__ngrams.alphabet))
         while True:
             i2 = i1 + randrange(-self.__neighbours, self.__neighbours + 1)

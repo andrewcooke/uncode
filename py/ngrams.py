@@ -3,7 +3,7 @@ from logging import getLogger
 from re import sub, fullmatch, split
 from math import log as ln
 
-from utils import keys_sorted_by_values
+from utils import keys_sorted_by_values, words_in_line, degrees
 
 log = getLogger(__name__)
 
@@ -16,29 +16,34 @@ def build_ngrams(path, degree, lower, raw, include):
     return NGrams(degree, log_probs)
 
 
-def count_ngrams(path, degree, lower, raw, include):
+def count_ngrams(path, max_degree, lower, raw, include):
     counts = defaultdict(lambda: defaultdict(lambda: 0))
     with open(path) as source:
         acc, nline, nchar = '', 0, 0
         for line in source:
             nline += 1
-            if lower: line = line.lower()
-            if not raw:
-                line = sub(r'\s+', ' ', line)
-                line = sub(r'^ ', '', line)
-            line = ''.join(c for c in line if include.fullmatch(c))
-            if ' ' in line:
+            line = clean_line(line, lower, raw, include)
+            if ' ' in line:  # words not used if spaces not in alphabet
                 for word in split(r'\W+', line):
                     if word:
                         counts[WORDS][word.lower()] += 1
             acc += line
             nchar += len(line)
-            while len(acc) >= degree:
-                for n in range(1, degree+1):
-                    counts[n][acc[:n]] += 1
+            while len(acc) >= max_degree:
+                for degree in degrees(max_degree):
+                    counts[degree][acc[:degree]] += 1
                 acc = acc[1:]
-        log.debug(f'read {nline} lines ({nchar} chars from {path}')
+        log.debug(f'read {nline} lines ({nchar} chars) from {path}')
         return counts
+
+
+def clean_line(line, lower, raw, include):
+    if lower: line = line.lower()
+    if not raw:
+        # line will have a trailing space after this because of the final \n
+        line = sub(r'\s+', ' ', line)
+        line = sub(r'^ ', '', line)
+    return ''.join(c for c in line if include.fullmatch(c))
 
 
 def counts_to_log_probs(counts):
@@ -63,7 +68,7 @@ class NGrams:
 
     def __str__(self):
         return f'''alphabet: {self.alphabet}
-{'\n'.join(self.__str_degree(n) for n in range(1, self.degree+1))}
+{'\n'.join(self.__str_degree(n) for n in degrees(self.degree))}
 {self.__str_degree(WORDS) if WORDS in self.__log_probs else ''}
 '''
 
