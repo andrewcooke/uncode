@@ -63,7 +63,7 @@ options.
   this value is then modified by `--heat` and used as an upper limit for what changes we will accept.
 
 * we then try swapping characters many times, looking at the changing scores, always keeping guesses
-  that improve (increase) the score and *sometimes* keeping guesses that decrease the score (ie if the 
+  that improve (increase) the score and *sometimes* keeping changes that decrease the score (ie if the 
   increase is less than the upper limit).
 
 * as time goes on we lower the upper limit, becoming more strict about only accepting improvements 
