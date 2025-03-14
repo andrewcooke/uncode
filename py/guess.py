@@ -4,7 +4,7 @@ from random import randrange
 from re import split
 
 from ngrams import WORDS
-from utils import overlapping_chunks
+from utils import overlapping_chunks, keys_sorted_by_values
 
 log = getLogger(__name__)
 
@@ -24,15 +24,17 @@ class Guess:
         counter = defaultdict(lambda: 0)
         for c in self.__code:
             counter[c] += 1
-        enc = [kv[0] for kv in sorted(counter.items(), key=lambda kv: kv[1], reverse=True)]
-        plain = ''.join(kv[0] for kv in sorted(self.__ngrams[1].items(), key=lambda kv: kv[1], reverse=True))
-        for c in enc:
+        plain = ''.join(keys_sorted_by_values(self.__ngrams[1], reverse=True))
+        mapping = 'best guess: '
+        for c in keys_sorted_by_values(counter, reverse=True):
             if not plain:
+                log.debug(mapping)
                 raise Exception(f'insufficient alphabet for input')
             p, plain = plain[0], plain[1:]
-            log.debug(f'{p} -> {c}')
+            mapping += f'{c}->{p} '
             self.__encode[p] = c
             self.__decode[c] = p
+        log.debug(mapping)
 
     def score(self, ngrams, words, weight):
         score = 0

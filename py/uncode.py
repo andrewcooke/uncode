@@ -33,10 +33,12 @@ def main():
         print(ngrams)
     else:
         code = possibly_stdin(args.code)
-        code = PARSER[args.format](code)
+        parse, fmt = PARSER[args.format], FMT[args.format]
+        code = parse(code)
         log.debug(f'code parsed to "{code}"')
-        anneal(code, FMT[args.format],
-               ngrams, args.words, args.neighbours, args.steps, args.heat, args.gamma, args.weight, args.every)
+        log.debug(f'which formats back to ({fmt(code)})')
+        anneal(code, fmt, ngrams, args.words, args.neighbours, args.steps, args.heat, args.gamma,
+               args.weight, args.every)
 
 
 def make_parser():
