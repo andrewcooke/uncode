@@ -1,12 +1,13 @@
-import fileinput
+from argparse import ArgumentParser
 from argparse import ArgumentParser
 from logging import getLogger, StreamHandler
 from re import compile
-from sys import stderr, stdin
+from sys import stderr
 
 from anneal import anneal
+from guess import Guess
 from ngrams import build_ngrams
-from parsers import STRING, HEX, PARSER, FMT, BASE64
+from parser import STRING, HEX, BASE64, read_code
 
 log = getLogger(__name__)
 
@@ -31,14 +32,12 @@ def main():
     ngrams = build_ngrams(args.text, args.degree, args.lower, args.raw, compile(args.include))
     if args.dump:
         print(ngrams)
-    else:
-        code = possibly_stdin(args.code)
-        parse, fmt = PARSER[args.format], FMT[args.format]
-        code = parse(code)
-        log.debug(f'code parsed to "{code}"')
-        log.debug(f'which formats back to ({fmt(code)})')
-        anneal(code, fmt, ngrams, args.words, args.neighbours, args.steps, args.heat, args.gamma,
-               args.weight, args.every)
+    code, fmt_code = read_code(args.code, args.format)
+    guess = Guess(code, fmt_code, ngrams, args.neighbours)
+    if args.hist:
+        print(f'plaintext:\n{ngrams.hist()}')
+        print(f'ciphertext:\n{guess.hist()}')
+    anneal(guess, ngrams, args.words, args.steps, args.heat, args.gamma, args.weight, args.every)
 
 
 def make_parser():
@@ -64,7 +63,9 @@ the ciphertext, and the include pattern, which should select the characters used
     parser.add_argument('--include', metavar='REGEX', default=DEFAULT_INCLUDE,
                         help=f'sample characters to include (default {DEFAULT_INCLUDE})')
     parser.add_argument('--dump', action='store_true',
-                        help='dump ngrams (and exit)')
+                        help='print ngrams')
+    parser.add_argument('--hist', action='store_true',
+                        help='print histograms')
     parser.add_argument('--steps', metavar='N', type=int, default=DEFAULT_STEPS,
                         help=f'number of iterations (default {DEFAULT_STEPS})')
     parser.add_argument('--every', metavar='N', type=int, default=DEFAULT_EVERY,
@@ -81,13 +82,6 @@ the ciphertext, and the include pattern, which should select the characters used
                         help=f'verbosity (1-5, default {DEFAULT_VERBOSITY})')
     parser.add_argument('code', help='text to uncode (- will read from stdin)')
     return parser
-
-
-def possibly_stdin(code):
-    if code == '-':
-        return ''.join(stdin)
-    else:
-        return code
 
 
 if __name__ == '__main__':

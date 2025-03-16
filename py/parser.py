@@ -1,5 +1,10 @@
 from base64 import b64decode, b64encode
+from logging import getLogger
 from re import sub
+
+from utils import possibly_stdin
+
+log = getLogger(__name__)
 
 
 # the type of the ciphertext (Guess.code) is not fixed; it only has to be a sequence
@@ -50,3 +55,13 @@ FMT = {
     HEX: hex_fmt,
     BASE64: base64_fmt
 }
+
+
+def read_code(code, format):
+    code = possibly_stdin(code)
+    parse, fmt = PARSER[format], FMT[format]
+    code = parse(code)
+    fmt_code = fmt(code)
+    log.debug(f'code parsed to "{code}"')
+    log.debug(f'which formats back to ({fmt_code})')
+    return code, fmt_code

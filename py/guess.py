@@ -2,18 +2,18 @@ from collections import defaultdict
 from copy import copy
 from logging import getLogger
 from random import randrange
-from re import split
 
 from ngrams import WORDS
-from utils import overlapping_chunks, keys_sorted_by_values, words_in_line, degrees
+from utils import overlapping_chunks, keys_sorted_by_values, words_in_line, degrees, fmt_hist
 
 log = getLogger(__name__)
 
 
 class Guess:
 
-    def __init__(self, code, ngrams, neighbours):
-        self.__code = code   # see comments on type in parsers.py
+    def __init__(self, code, fmt_code, ngrams, neighbours):
+        self.fmt_code = fmt_code
+        self.__code = code
         self.__ngrams = ngrams
         self.__neighbours = min(len(ngrams.alphabet) - 1, max(1, neighbours))
         self.__encode = {}
@@ -21,9 +21,7 @@ class Guess:
         self.__best_guess()
 
     def __best_guess(self):
-        counter = defaultdict(lambda: 0)
-        for c in self.__code:
-            counter[c] += 1
+        counter = self.__count()
         plain = ''.join(keys_sorted_by_values(self.__ngrams[1], reverse=True))
         mapping = 'best guess: '
         for c in keys_sorted_by_values(counter, reverse=True):
@@ -35,6 +33,12 @@ class Guess:
             self.__encode[p] = c
             self.__decode[c] = p
         log.debug(mapping)
+
+    def __count(self):
+        counter = defaultdict(lambda: 0)
+        for c in self.__code:
+            counter[c] += 1
+        return counter
 
     def score(self, ngrams, words, weight):
         score = 0
@@ -86,3 +90,6 @@ class Guess:
             i2 = i1 + randrange(-self.__neighbours, self.__neighbours + 1)
             if 0 <= i2 < len(self.__ngrams.alphabet) and i1 != i2:
                 return self.__ngrams.alphabet[i1], self.__ngrams.alphabet[i2]
+
+    def hist(self):
+        return fmt_hist(self.__count())

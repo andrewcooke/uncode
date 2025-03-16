@@ -3,7 +3,7 @@ from logging import getLogger
 from re import sub, fullmatch, split
 from math import log as ln
 
-from utils import keys_sorted_by_values, words_in_line, degrees
+from utils import keys_sorted_by_values, words_in_line, degrees, fmt_hist
 
 log = getLogger(__name__)
 
@@ -80,3 +80,6 @@ degree {n}:
 
     def __str_score(self, n, s):
         return f'''{s:.3f}: {','.join(sorted(k for k,v in self[n].items() if v == s))}'''
+
+    def hist(self):
+        return fmt_hist(self[1])
