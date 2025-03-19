@@ -11,26 +11,29 @@ log = getLogger(__name__)
 
 class Guess:
 
-    def __init__(self, code, fmt_code, ngrams, neighbours):
+    def __init__(self, code, fmt_code, ngrams, neighbours, cutoff):
         self.fmt_code = fmt_code
         self.__code = code
         self.__ngrams = ngrams
         self.__neighbours = min(len(ngrams.alphabet) - 1, max(1, neighbours))
+        self.__cutoff = cutoff
         self.__encode = {}
         self.__decode = {}
-        self.__best_guess()
 
-    def __best_guess(self):
+    def best_guess(self):
         counter = self.__count()
         plain = ''.join(keys_sorted_by_values(self.__ngrams[1], reverse=True))
         mapping = 'best guess: '
         for c in keys_sorted_by_values(counter, reverse=True):
-            if not plain:
+            if not plain and not self.__cutoff:
                 log.debug(mapping)
-                raise Exception(f'insufficient alphabet for input')
-            p, plain = plain[0], plain[1:]
+                raise Exception(f'insufficient alphabet for input (try --cutoff)')
+            if plain:
+                p, plain = plain[0], plain[1:]
+            else:
+                p = self.__cutoff
             mapping += f'{c}->{p} '
-            self.__encode[p] = c
+            if plain: self.__encode[p] = c
             self.__decode[c] = p
         log.debug(mapping)
 
@@ -48,7 +51,7 @@ class Guess:
             for ngram in overlapping_chunks(plain, degree):
                 score += k * ngrams[degree][ngram]
         if words:
-            for word in words_in_line(plain):
+            for word in words_in_line(plain, self.__cutoff):
                 score += ngrams[WORDS][word.lower()]
         return score / len(self.__code)
 

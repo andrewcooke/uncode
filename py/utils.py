@@ -12,9 +12,9 @@ def overlapping_chunks(text, length):
         text = text[1:]
 
 
-def words_in_line(line):
-    # be consistent on how we split words
-    return (word for word in split(r'\W+', line) if word)
+def words_in_line(line, cutoff=None):
+    sep = f'[{cutoff}\\W]+' if cutoff else r'\W+'
+    return (word for word in split(sep, line) if word.strip())
 
 
 def degrees(degree):

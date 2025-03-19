@@ -33,10 +33,11 @@ def main():
     if args.dump:
         print(ngrams)
     code, fmt_code = read_code(args.code, args.format)
-    guess = Guess(code, fmt_code, ngrams, args.neighbours)
+    guess = Guess(code, fmt_code, ngrams, args.neighbours, args.cutoff)
     if args.hist:
         print(f'plaintext:\n{ngrams.hist()}')
         print(f'ciphertext:\n{guess.hist()}')
+    guess.best_guess()  # do this after the above since it may throw an error
     anneal(guess, ngrams, args.words, args.steps, args.heat, args.gamma, args.weight, args.every)
 
 
@@ -58,6 +59,8 @@ the ciphertext, and the include pattern, which should select the characters used
                         help='use raw format (verbatim whitespace)?')
     parser.add_argument('--words', action='store_true',
                         help='score whole words (separately from ngrams)?')
+    parser.add_argument('--cutoff', metavar='CHAR',
+                        help='set excess cypher characters to this (default is error)')
     parser.add_argument('--neighbours', metavar='N', type=int, default=DEFAULT_NEIGHBOURS,
                         help=f'swap within this range in alphabet (default {DEFAULT_NEIGHBOURS})')
     parser.add_argument('--include', metavar='REGEX', default=DEFAULT_INCLUDE,

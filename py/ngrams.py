@@ -24,9 +24,8 @@ def count_ngrams(path, max_degree, lower, raw, include):
             nline += 1
             line = clean_line(line, lower, raw, include)
             if ' ' in line:  # words not used if spaces not in alphabet
-                for word in split(r'\W+', line):
-                    if word:
-                        counts[WORDS][word.lower()] += 1
+                for word in words_in_line(line):
+                    counts[WORDS][word.lower()] += 1
             acc += line
             nchar += len(line)
             while len(acc) >= max_degree:
