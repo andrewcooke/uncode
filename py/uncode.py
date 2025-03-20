@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from argparse import ArgumentParser
 from logging import getLogger, StreamHandler
 from re import compile
+from string import ascii_uppercase, ascii_lowercase
 from sys import stderr
 
 from anneal import anneal
@@ -29,6 +30,7 @@ def main():
     # v is 1 to 5, level is 10 to 50
     getLogger().setLevel(60 - 10 * args.v)
     getLogger().addHandler(StreamHandler(stderr))
+    check_lower(args)
     ngrams = build_ngrams(args.text, args.degree, args.lower, args.raw, compile(args.include))
     if args.dump:
         print(ngrams)
@@ -69,7 +71,7 @@ the ciphertext, and the include pattern, which should select the characters used
                         help='print ngrams')
     parser.add_argument('--hist', action='store_true',
                         help='print histograms')
-    parser.add_argument('--steps', metavar='N', type=int, default=DEFAULT_STEPS,
+    parser.add_argument('--steps', '-n', metavar='N', type=int, default=DEFAULT_STEPS,
                         help=f'number of iterations (default {DEFAULT_STEPS})')
     parser.add_argument('--every', metavar='N', type=int, default=DEFAULT_EVERY,
                         help=f'print progress every N iterations (default {DEFAULT_EVERY})')
@@ -85,6 +87,14 @@ the ciphertext, and the include pattern, which should select the characters used
                         help=f'verbosity (1-5, default {DEFAULT_VERBOSITY})')
     parser.add_argument('code', help='text to uncode (- will read from stdin)')
     return parser
+
+
+def check_lower(args):
+    # actually this isn't a big deal because include simply won't see any caps
+    # if args.lower and any(compile(args.include).match(cap) for cap in ascii_uppercase):
+    #     log.warning(f'WARNING: --lower used, but ---include allows capitals')
+    if not args.lower and not any(compile(args.include).match(cap) for cap in ascii_lowercase):
+        log.warning(f'WARNING: ---include excludes lowercase (if you want monocase, use --lower)')
 
 
 if __name__ == '__main__':
