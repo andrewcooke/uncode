@@ -52,7 +52,7 @@ class Guess:
                 score += k * ngrams[degree][ngram]
         if words:
             for word in words_in_line(plain, self.__cutoff):
-                score += ngrams[WORDS][word.lower()]
+                score += ngrams[WORDS][word.lower()] * len(word)
         return score / len(self.__code)
 
     def __str__(self):

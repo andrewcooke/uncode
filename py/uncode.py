@@ -51,7 +51,7 @@ guess the substitution used for the ciphertext and so determine the underlying p
 the most important parameters are the sample file, which should match the language and style used in
 the ciphertext, and the include pattern, which should select the characters used in the plaintext.
     ''')
-    parser.add_argument('--text', metavar='PATH', required=True,
+    parser.add_argument('--text', metavar='PATH', nargs='+', required=True,
                         help='a sample file for the target language')
     parser.add_argument('--degree', metavar='N', type=int, default=DEFAULT_DEGREE,
                         help=f'maximum length of n-grams (default {DEFAULT_DEGREE})')

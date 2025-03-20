@@ -10,14 +10,15 @@ log = getLogger(__name__)
 WORDS = 'words'
 
 
-def build_ngrams(path, degree, lower, raw, include):
-    counts = count_ngrams(path, degree, lower, raw, include)
+def build_ngrams(paths, degree, lower, raw, include):
+    counts = defaultdict(lambda: defaultdict(lambda: 0))
+    for path in paths:
+        counts = count_ngrams(counts, path, degree, lower, raw, include)
     log_probs = counts_to_log_probs(counts)
     return NGrams(degree, log_probs)
 
 
-def count_ngrams(path, max_degree, lower, raw, include):
-    counts = defaultdict(lambda: defaultdict(lambda: 0))
+def count_ngrams(counts, path, max_degree, lower, raw, include):
     with open(path) as source:
         acc, nline, nchar = '', 0, 0
         for line in source:
@@ -32,7 +33,7 @@ def count_ngrams(path, max_degree, lower, raw, include):
                 for degree in degrees(max_degree):
                     counts[degree][acc[:degree]] += 1
                 acc = acc[1:]
-        log.debug(f'read {nline} lines ({nchar} chars) from {path}')
+        log.info(f'read {nline} lines ({nchar} chars) from {path}')
         return counts
 
 
