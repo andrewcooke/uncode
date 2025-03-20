@@ -1,4 +1,4 @@
-from argparse import ArgumentParser
+from argparse import ArgumentParser, RawTextHelpFormatter
 from argparse import ArgumentParser
 from logging import getLogger, StreamHandler
 from re import compile
@@ -12,11 +12,11 @@ from parser import STRING, HEX, BASE64, read_code
 
 log = getLogger(__name__)
 
-DEFAULT_DEGREE = 4
+DEFAULT_DEGREE = 6
 DEFAULT_INCLUDE = '[A-Za-z0-9 ]'
 DEFAULT_STEPS = 100000
 DEFAULT_HEAT = 1
-DEFAULT_GAMMA = 1
+DEFAULT_GAMMA = 0.5
 DEFAULT_WEIGHT = 1
 DEFAULT_EVERY = 100
 DEFAULT_VERBOSITY = 4
@@ -40,17 +40,23 @@ def main():
         print(f'plaintext:\n{ngrams.hist()}')
         print(f'ciphertext:\n{guess.hist()}')
     guess.best_guess()  # do this after the above since it may throw an error
-    anneal(guess, ngrams, args.words, args.steps, args.heat, args.gamma, args.weight, args.every)
+    anneal(guess, ngrams, not args.no_words, args.steps, args.heat, args.gamma, args.weight, args.every)
 
 
 def make_parser():
     parser = ArgumentParser('uncode', description='''
-this measures the frequency of n-grams in the given text and then uses that information to try
-guess the substitution used for the ciphertext and so determine the underlying plaintext.
+this measures the frequency of n-grams in the given text and then uses that 
+information to try guess the substitution used for the ciphertext and so 
+determine the underlying plaintext.
 
-the most important parameters are the sample file, which should match the language and style used in
-the ciphertext, and the include pattern, which should select the characters used in the plaintext.
-    ''')
+the most important parameters are the sample file, which should match the 
+language and style used in the ciphertext, and the include pattern, which 
+should select the characters used in the plaintext.
+
+note that you can use -- to separate --text arguments from the code text:
+  python uncode.py --text ~/Documents/* -- jidfsojifergergieojwqjiqwo
+but then the code text must be the final argument.
+''', formatter_class=RawTextHelpFormatter)
     parser.add_argument('--text', metavar='PATH', nargs='+', required=True,
                         help='a sample file for the target language')
     parser.add_argument('--degree', metavar='N', type=int, default=DEFAULT_DEGREE,
@@ -59,8 +65,8 @@ the ciphertext, and the include pattern, which should select the characters used
                         help='force sample to lower case?')
     parser.add_argument('--raw', action='store_true',
                         help='use raw format (verbatim whitespace)?')
-    parser.add_argument('--words', action='store_true',
-                        help='score whole words (separately from ngrams)?')
+    parser.add_argument('--no-words', action='store_true',
+                        help='don\'t score whole words (separately from ngrams)?')
     parser.add_argument('--cutoff', metavar='CHAR',
                         help='set excess cypher characters to this (default is error)')
     parser.add_argument('--neighbours', metavar='N', type=int, default=DEFAULT_NEIGHBOURS,
